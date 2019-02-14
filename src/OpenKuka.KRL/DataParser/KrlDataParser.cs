@@ -43,30 +43,7 @@ namespace OpenKuka.KRL.DataParser
         {
             var tokenizer = KrlDataTokenizer.Instance;
             var tokens = tokenizer.Tokenize(input);
-
-            //string path = @"C:\Temp\tokens.txt";
-            //if (!File.Exists(path))
-            //{
-            //    File.Create(path).Dispose();
-            //}
-            //if (File.Exists(path))
-            //{
-            //    using (var tw = new StreamWriter(path, true))
-            //    {
-            //        foreach (var token in tokens)
-            //        {
-            //            Console.WriteLine(token);
-            //            tw.WriteLine(token);
-            //        }
-            //    }
-            //}
-            //Console.WriteLine(" ");
-
             var res = Data.TryParse(tokens);
-            //foreach (var data in res.Value)
-            //{
-            //    ((Data)data).Print("");
-            //}
 
             return res;
         }
