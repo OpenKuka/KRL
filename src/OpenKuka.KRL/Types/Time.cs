@@ -27,6 +27,24 @@ namespace OpenKuka.KRL.Types
             MONTH = date.Month;
             YEAR = date.Year;
         }
+        public DATE(Data data) : this()
+        {
+            var tree = data as StrucData;
+
+            if (tree == null)
+                throw new ArgumentException("The data provided is not a DATE", "data");
+
+            if (tree.StrucType != "DATE")
+                throw new ArgumentException("The data provided is not of type DATE");
+
+            if (tree.Value.ContainsKey("CSEC")) CSEC = ((IntData)tree.Value["CSEC"]).Value;
+            if (tree.Value.ContainsKey("SEC")) SEC = ((IntData)tree.Value["SEC"]).Value;
+            if (tree.Value.ContainsKey("MIN")) MIN = ((IntData)tree.Value["MIN"]).Value;
+            if (tree.Value.ContainsKey("HOUR")) HOUR = ((IntData)tree.Value["HOUR"]).Value;
+            if (tree.Value.ContainsKey("DAY")) DAY = ((IntData)tree.Value["DAY"]).Value;
+            if (tree.Value.ContainsKey("MONTH")) MONTH = ((IntData)tree.Value["MONTH"]).Value;
+            if (tree.Value.ContainsKey("YEAR")) YEAR = ((IntData)tree.Value["YEAR"]).Value;
+        }
 
         public DateTime ToDateTime() => new DateTime(YEAR ?? 0, MONTH ?? 0, DAY ?? 0, HOUR ?? 0, MIN ?? 0, SEC ?? 0, CSEC ?? 0, DateTimeKind.Unspecified);
         public override string ToString()
@@ -48,24 +66,6 @@ namespace OpenKuka.KRL.Types
             var cmd = showType ? "{DATE: " : "{";
             cmd += string.Join(", ", items) + "}";
             return cmd;
-        }
-
-        public static DATE Parse(StrucData tree)
-        {
-            if (tree.StrucType != "DATE")
-                throw new ArgumentException("The data provided is not of type DATE", "tree");
-
-            var date = new DATE();
-
-            date.CSEC = ((IntData)tree.Value["CSEC"]).Value;
-            date.SEC = ((IntData)tree.Value["SEC"]).Value;
-            date.MIN = ((IntData)tree.Value["MIN"]).Value;
-            date.HOUR = ((IntData)tree.Value["HOUR"]).Value;
-            date.DAY = ((IntData)tree.Value["DAY"]).Value;
-            date.MONTH = ((IntData)tree.Value["MONTH"]).Value;
-            date.YEAR = ((IntData)tree.Value["YEAR"]).Value;
-
-            return date;
         }
     }
 }
