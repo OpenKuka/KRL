@@ -233,6 +233,32 @@ namespace OpenKuka.KRL.Types
         public double? E5 { get; set; }
         public double? E6 { get; set; }
 
+        public E6AXIS(IEnumerable<double> axis)
+        {
+            A1 = axis.ElementAt(0);
+            A2 = axis.ElementAt(1);
+            A3 = axis.ElementAt(2);
+            A4 = axis.ElementAt(3);
+            A5 = axis.ElementAt(4);
+            A6 = axis.ElementAt(5);
+
+            E1 = null;
+            E2 = null;
+            E3 = null;
+            E4 = null;
+            E5 = null;
+            E6 = null;
+        }
+        public E6AXIS(IEnumerable<double> axis, IEnumerable<double> eAxis):this(axis)
+        {
+            E1 = eAxis.ElementAt(0);
+            E2 = eAxis.ElementAt(1);
+            E3 = eAxis.ElementAt(2);
+            E4 = eAxis.ElementAt(3);
+            E5 = eAxis.ElementAt(4);
+            E6 = eAxis.ElementAt(5);
+        }
+
         public E6AXIS(Data data) : this()
         {
             var tree = data as StrucData;
@@ -448,6 +474,7 @@ namespace OpenKuka.KRL.Types
 
             S = null;
             T = null;
+
             E1 = null;
             E2 = null;
             E3 = null;
@@ -455,18 +482,8 @@ namespace OpenKuka.KRL.Types
             E5 = null;
             E6 = null;
         }
-        public E6POS(IEnumerable<double> xyzabc, IEnumerable<double> eAxis)
+        public E6POS(IEnumerable<double> xyzabc, IEnumerable<double> eAxis):this(xyzabc)
         {
-            X = xyzabc.ElementAt(0);
-            Y = xyzabc.ElementAt(1);
-            Z = xyzabc.ElementAt(2);
-            A = xyzabc.ElementAt(3);
-            B = xyzabc.ElementAt(4);
-            C = xyzabc.ElementAt(5);
-
-            S = null;
-            T = null;
-
             E1 = eAxis.ElementAt(0);
             E2 = eAxis.ElementAt(1);
             E3 = eAxis.ElementAt(2);
@@ -474,8 +491,13 @@ namespace OpenKuka.KRL.Types
             E5 = eAxis.ElementAt(4);
             E6 = eAxis.ElementAt(5);
         }
+        public E6POS(IEnumerable<double> xyzabc, IEnumerable<double> eAxis, int status, int turn) : this(xyzabc, eAxis)
+        {
+            S = status;
+            T = turn;
+        }
 
-        public E6POS(Data data) : this()
+            public E6POS(Data data) : this()
         {
             var tree = data as StrucData;
 
