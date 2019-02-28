@@ -46,6 +46,7 @@ namespace OpenKuka.KRL.DataParser
         }
         public abstract void Print(string indent);
         public abstract string ToKrlString();
+        public virtual string KrlType => Type.ToString();
     }
 
 
@@ -59,6 +60,7 @@ namespace OpenKuka.KRL.DataParser
             Value = bool.Parse(value);
         }
         public override void Print(string indent) => Console.WriteLine(indent + "+- " + Name + "<" + Type + ">" + " = " + Value);
+        
     }
     public class EnumData : Data
     {
@@ -129,6 +131,7 @@ namespace OpenKuka.KRL.DataParser
             krl += "}";
             return krl;
         }
+        public override string KrlType => StrucType;
         public Dictionary<string, Data> Value { get; private set; }
         public StrucData(string name, string strucType, IEnumerable<Data> dataList) : base(name)
         {
