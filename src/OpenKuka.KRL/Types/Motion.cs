@@ -74,11 +74,10 @@ namespace OpenKuka.KRL.Types
         {
             if (bitsRep)
             {
-                var cmd = "'B";
+                var cmd = "";
                 cmd += B2 ? "1" : "0";
                 cmd += B1 ? "1" : "0";
                 cmd += B0 ? "1" : "0";
-                cmd += "'";
                 return cmd;
             }
             else
@@ -142,14 +141,13 @@ namespace OpenKuka.KRL.Types
         {
             if (bitsRep)
             {
-                var cmd = "'B";
+                var cmd = "";
                 cmd += B5 ? "1" : "0";
                 cmd += B4 ? "1" : "0";
                 cmd += B3 ? "1" : "0";
                 cmd += B2 ? "1" : "0";
                 cmd += B1 ? "1" : "0";
                 cmd += B0 ? "1" : "0";
-                cmd += "'";
                 return cmd;
             }
             else
@@ -571,8 +569,8 @@ namespace OpenKuka.KRL.Types
             if (tree == null)
                 throw new ArgumentException("The data provided is not a STRUC", "data");
 
-            if (tree.StrucType != "VEL")
-                throw new ArgumentException("The data provided is not of type VEL");
+            if (tree.StrucType != "CP")
+                throw new ArgumentException("The data provided is not of type CP");
 
             if (tree.Value.ContainsKey("CP")) LIN = ((RealData)tree.Value["CP"]).Value;
             if (tree.Value.ContainsKey("ORI1")) ORI1 = ((RealData)tree.Value["ORI1"]).Value;
