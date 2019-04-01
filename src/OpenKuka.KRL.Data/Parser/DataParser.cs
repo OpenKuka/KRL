@@ -1,4 +1,4 @@
-﻿using OpenKuka.KRL.Data.AST;
+﻿using OpenKuka.KRL.Data.DOM;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,36 +7,43 @@ using System.Text;
 
 namespace OpenKuka.KRL.Data.Parser
 {
-    public static class KRLDataParser
+    public static class DataParser
     {
-        public static List<DataObject> Parse(string inputString)
+        public static List<IADSValue> Parse(string inputString)
         {
-            return Parse(KRLDataLexer.Tokenize(inputString));
+            return Parse(DataLexer.Tokenize(inputString));
         }
 
-        private static List<DataObject> Parse(List<RegexToken<KrlDataTokenType>> tokens)
+        /// <summary>
+        /// Case 1 (single value) : VALUE
+        /// Case 2 (array of values) : V1, V2, V3, V4, V5 with Vi all of same type
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
+        private static List<IADSValue> Parse(List<RegexToken<TokenType>> tokens)
         {
             int index = 0;
             int count = tokens.Count;
 
-            var dataList = new List<DataObject>();
+            var dataList = new List<IADSValue>();
 
             while (index < count)
             {
                 var token = tokens[index];
-                if (token.Type == KrlDataTokenType.Comma) index++;
-                dataList.Add(ParseData(tokens, ref index, false));
+                if (token.Type == TokenType.Comma) index++;
+                var variable = ParseVariable(tokens, ref index, false);
+                dataList.Add(variable.Value);
             }
 
             return dataList;
         }
-        private static DataObject ParseData(List<RegexToken<KrlDataTokenType>> tokens, ref int index, bool isIdentifierMandatory = true)
+        private static ADSVariable ParseVariable(List<RegexToken<TokenType>> tokens, ref int index, bool isIdentifierMandatory = true)
         {
             int count = tokens.Count;
             bool hasIdentifier = false;
 
-            DataObject data;
-            var name = "";
+            IADSValue value = null;
+            string name = "";
 
             if (isIdentifierMandatory)
             {
@@ -45,7 +52,7 @@ namespace OpenKuka.KRL.Data.Parser
                     throw new ArgumentException("expected : more tokens");
 
                 // the first token must be the object identifier
-                if (tokens[index].Type != KrlDataTokenType.ID)
+                if (tokens[index].Type != TokenType.ID)
                     throw new ArgumentException("expected : identifier");
 
                 hasIdentifier = true;
@@ -57,7 +64,7 @@ namespace OpenKuka.KRL.Data.Parser
                     throw new ArgumentException("expected : more tokens");
 
                 // the first token is the object identifier
-                if (tokens[index].Type == KrlDataTokenType.ID)
+                if (tokens[index].Type == TokenType.ID)
                     hasIdentifier = true;
             }
 
@@ -68,9 +75,9 @@ namespace OpenKuka.KRL.Data.Parser
                 // check if the identifier is followed by '[]'
                 if (index + 1 < count)
                 {
-                    if (tokens[index].Type == KrlDataTokenType.LSquareBracket)
+                    if (tokens[index].Type == TokenType.LSquareBracket)
                     {
-                        if (tokens[index + 1].Type != KrlDataTokenType.RSquareBracket)
+                        if (tokens[index + 1].Type != TokenType.RSquareBracket)
                             throw new ArgumentException("expected : ']'");
 
                         // append '[]' to the identifier
@@ -88,68 +95,67 @@ namespace OpenKuka.KRL.Data.Parser
             var token = tokens[index];
             switch (token.Type)
             {
-                case KrlDataTokenType.BoolValue:
-                    data = new BoolData(token.Value);
+                case TokenType.BoolValue:
+                    value = new BoolValue(token.Value);
                     index++;
                     break;
 
-                case KrlDataTokenType.IntNumber:
-                    data = new IntData(token.Value);
+                case TokenType.IntNumber:
+                    value = new IntValue(token.Value);
                     index++;
                     break;
 
-                case KrlDataTokenType.RealNumber:
-                    data = new RealData(token.Value);
+                case TokenType.RealNumber:
+                    value = new RealValue(token.Value);
                     index++;
                     break;
 
-                case KrlDataTokenType.NaN:
-                    data = new RealData(token.Value);
+                case TokenType.NaN:
+                    value = new RealValue(token.Value);
                     index++;
                     break;
 
-                case KrlDataTokenType.EnumValue:
-                    data = new EnumData(token.Value);
+                case TokenType.EnumValue:
+                    value = new EnumValue(token.Value);
                     index++;
                     break;
 
-                case KrlDataTokenType.DoubleQuotedString:
+                case TokenType.DoubleQuotedString:
                     var dq = token.Value.Trim('"');
-                    if (dq.Length > 1) data = new StringData(dq);
-                    else data = new CharData(dq);
+                    if (dq.Length > 1) value = new StringValue(dq);
+                    else value = new CharValue(dq);
                     index++;
                     break;
 
-                case KrlDataTokenType.SingleQuotedString:
+                case TokenType.SingleQuotedString:
                     var sq = token.Value.Trim('\'');
-                    if (sq.Length > 1) data = new StringData(sq);
-                    else data = new CharData(sq);
+                    if (sq.Length > 1) value = new StringValue(sq);
+                    else value = new CharValue(sq);
                     index++;
                     break;
 
-                case KrlDataTokenType.BitString:
-                    data = new BitArrayData(token.Value);
+                case TokenType.BitString:
+                    value = new BitArrayValue(token.Value);
                     index++;
                     break;
 
-                case KrlDataTokenType.LCurlyBracket:
-                    data = ParseStruc(tokens, ref index);
+                case TokenType.LCurlyBracket:
+                    value = ParseStrucValue(tokens, ref index);
                     break;
 
-                case KrlDataTokenType.ID:
+                case TokenType.ID:
                     throw new ArgumentException("expected : value (got identifier)");
 
-                case KrlDataTokenType.Comma:
+                case TokenType.Comma:
                     throw new ArgumentException("expected : value (got comma separator)");
 
                 default:
                     throw new ArgumentException("expected : value");
             }
 
-            data.Name = name;
-            return data;
+            return new ADSVariable() { Name = name, Value = value };
         }
-        private static StrucData ParseStruc(List<RegexToken<KrlDataTokenType>> tokens, ref int index)
+        private static StrucValue ParseStrucValue(List<RegexToken<TokenType>> tokens, ref int index)
         {
             int count = tokens.Count;
 
@@ -157,30 +163,31 @@ namespace OpenKuka.KRL.Data.Parser
             index++;
 
             string strucName = "";
-            StrucData data;
+            StrucValue data;
 
             if (index + 2 > count)
                 throw new ArgumentException("expected : more tokens");
 
-            if (tokens[index].Type != KrlDataTokenType.ID)
+            if (tokens[index].Type != TokenType.ID)
                 throw new ArgumentException("expected : identifier");
 
             // if the next token is a colon, then the identifier is for the struc type
-            if (tokens[index + 1].Type == KrlDataTokenType.Colon)
+            if (tokens[index + 1].Type == TokenType.Colon)
             {
                 strucName = tokens[index].Value;
                 index++;
                 index++;
             }
 
-            data = new StrucData(strucName);
+            data = new StrucValue(strucName);
 
             while (index < count)
             {
                 var token = tokens[index];
-                if (token.Type == KrlDataTokenType.RCurlyBracket) { index++; break; }
-                if (token.Type == KrlDataTokenType.Comma) index++;
-                data.Add(ParseData(tokens, ref index, true));
+                if (token.Type == TokenType.RCurlyBracket) { index++; break; }
+                if (token.Type == TokenType.Comma) index++;
+                var variable = ParseVariable(tokens, ref index, true);
+                data.Add(variable.Name, variable.Value);
             }
 
             return data;

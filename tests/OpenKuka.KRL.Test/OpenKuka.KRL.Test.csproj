@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2DFC0F2B-BD84-458C-B131-4ABB24B0D33E}</ProjectGuid>
+    <ProjectGuid>{D99C0455-6026-4BC4-B1D4-AB4C1C1EC781}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>OpenKuka.KRL.Data</RootNamespace>
-    <AssemblyName>OpenKuka.KRL.Data</AssemblyName>
+    <RootNamespace>OpenKuka.KRL.Test</RootNamespace>
+    <AssemblyName>OpenKuka.KRL.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -21,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,7 +34,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,30 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DOM\ADSValues\ArrayValue.cs" />
-    <Compile Include="DOM\ADSValues\BitArrayValue.cs" />
-    <Compile Include="DOM\ADSValues\BoolValue.cs" />
-    <Compile Include="DOM\ADSValues\CharValue.cs" />
-    <Compile Include="DOM\ADSValues\EnumValue.cs" />
-    <Compile Include="DOM\ADSValues\IntValue.cs" />
-    <Compile Include="DOM\ADSValues\RealValue.cs" />
-    <Compile Include="DOM\ADSValues\StringValue.cs" />
-    <Compile Include="DOM\ADSValues\StrucValue.cs" />
-    <Compile Include="DOM\ADSVariable.cs" />
-    <Compile Include="Serializer\CustomContractResolver.cs" />
-    <Compile Include="DOM\ADSValue.cs" />
-    <Compile Include="Parser\DataParser.cs" />
-    <Compile Include="Parser\DataLexer.cs" />
-    <Compile Include="Parser\RegexLexer.cs" />
-    <Compile Include="Parser\Token.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

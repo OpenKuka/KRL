@@ -8,7 +8,7 @@ namespace OpenKuka.KRL.Data.Parser
     /// <summary>
     /// Tokens definition for parsing KrlDataObjects.
     /// </summary>
-    public enum KrlDataTokenType
+    public enum TokenType
     {
         // struct delimiters
         [Token(Pattern = @"\s+", Skip = true)]
@@ -64,11 +64,11 @@ namespace OpenKuka.KRL.Data.Parser
     /// Gets a strongly typed RegexLexer of type KrlDataTokenType.
     /// Use the Instance property.
     /// </summary>
-    public static class KRLDataLexer
+    public static class DataLexer
     {
-        public static List<RegexToken<KrlDataTokenType>> Tokenize(string inputString)
+        public static List<RegexToken<TokenType>> Tokenize(string inputString)
         {
-            return RegexLexer<KrlDataTokenType>.Instance.Tokenize(inputString);
+            return RegexLexer<TokenType>.Instance.Tokenize(inputString);
         }
     }
 }
