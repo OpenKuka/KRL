@@ -31,6 +31,8 @@ namespace OpenKuka.KRL.DataParser
         Key,
     }
 
+ 
+
     public static class KrlDataTokenizer
     {
         public static TextParser<Unit> BooleanToken { get; } =
